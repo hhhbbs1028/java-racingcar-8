@@ -46,5 +46,27 @@ public class Application {
             }
             System.out.println("\n");
         }
+
+        HashMap<String, Integer> carNamesPositions = new HashMap<>();
+        for (Car car : cars){
+            int carPosition = car.getPosition();
+            String carName = car.getName();
+            carNamesPositions.put(carName, carPosition);
+        }
+
+        Collection<Integer> values = carNamesPositions.values();
+        Integer maxPosition = Collections.max(values);
+
+        Iterator<Map.Entry<String, Integer>> entry = carNamesPositions.entrySet().iterator();
+
+        ArrayList<String> winners = new ArrayList<String>();
+        while (entry.hasNext()){
+            Map.Entry<String, Integer> car = entry.next();
+            if (car.getValue()>=maxPosition){
+                winners.add(car.getKey());
+            }
+        }
+
+        System.out.println("최종 우승자 : "+String.join(", ", winners));
     }
 }
