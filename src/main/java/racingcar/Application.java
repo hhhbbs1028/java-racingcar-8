@@ -28,5 +28,23 @@ public class Application {
             Car car = new Car(carName);
             cars.add(car);
         }
+
+        System.out.println("시도할 횟수는 몇 회인가요?");
+        String userInputCount = Console.readLine();
+        int count = 0;
+        try{
+            count = Integer.parseInt(userInputCount);
+        } catch (Exception e){
+            throw new IllegalArgumentException();
+        }
+
+        System.out.println("실행 결과");
+        for (int i=0; i<count; i++){
+            for (Car car : cars){
+                car.run();
+                System.out.println(car.getName()+" : " + "-".repeat(car.getPosition()));
+            }
+            System.out.println("\n");
+        }
     }
 }
