@@ -1,7 +1,9 @@
 package racingcar;
 
 import camp.nextstep.edu.missionutils.Console;
+
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Application {
     public static void main(String[] args) {
@@ -9,44 +11,29 @@ public class Application {
         System.out.println("경주할 자동차 이름을 입력하세요.(이름은 쉼표(,) 기준으로 구분)");
         List<String> carNames = parseNames(Console.readLine());
 
-        for (String carName : carNames){
-            Car car = new Car(carName);
-            cars.add(car);
-        }
+        List<Car> cars = carNames.stream()
+                .map(Car::new) // 불변식은 Car 생성자에서 검증
+                .toList();
 
         System.out.println("시도할 횟수는 몇 회인가요?");
         int count = parseCount(Console.readLine());
 
         System.out.println("실행 결과");
-        for (int i=0; i<count; i++){
-            for (Car car : cars){
-                car.run();
-                System.out.println(car.getName()+" : " + "-".repeat(car.getPosition()));
-            }
-            System.out.println("\n");
+        for (int i = 0; i < count; i++) {
+            cars.forEach(Car::run);
+            cars.forEach(car ->
+                    System.out.println(car.getName() + " : " + "-".repeat(car.getPosition()))
+            );
+            System.out.println();
         }
 
-        HashMap<String, Integer> carNamesPositions = new HashMap<>();
-        for (Car car : cars){
-            int carPosition = car.getPosition();
-            String carName = car.getName();
-            carNamesPositions.put(carName, carPosition);
-        }
+        int max = cars.stream().mapToInt(Car::getPosition).max().orElse(0);
+        List<String> winners = cars.stream()
+                .filter(c -> c.getPosition() == max)
+                .map(Car::getName)
+                .collect(Collectors.toList());
 
-        Collection<Integer> values = carNamesPositions.values();
-        Integer maxPosition = Collections.max(values);
-
-        Iterator<Map.Entry<String, Integer>> entry = carNamesPositions.entrySet().iterator();
-
-        ArrayList<String> winners = new ArrayList<String>();
-        while (entry.hasNext()){
-            Map.Entry<String, Integer> car = entry.next();
-            if (car.getValue()>=maxPosition){
-                winners.add(car.getKey());
-            }
-        }
-
-        System.out.println("최종 우승자 : "+String.join(", ", winners));
+        System.out.println("최종 우승자 : " + String.join(", ", winners));
     }
 
     private static List<String> parseNames(String raw) {
