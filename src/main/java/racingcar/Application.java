@@ -7,17 +7,7 @@ public class Application {
     public static void main(String[] args) {
         // TODO: 프로그램 구현
         System.out.println("경주할 자동차 이름을 입력하세요.(이름은 쉼표(,) 기준으로 구분)");
-        String userInputCars = Console.readLine();
-        String[] userInputSplit = userInputCars.split(",");
-        List<String> carNames = Arrays.asList(userInputSplit);
-        carNames.forEach(c -> {
-            try {
-                checkCarName(c);
-            } catch (Exception e) {
-                throw new IllegalArgumentException(e);
-            }
-        });
-        ArrayList<Car> cars = new ArrayList<>();
+        List<String> carNames = parseNames(Console.readLine());
 
         for (String carName : carNames){
             Car car = new Car(carName);
@@ -25,13 +15,7 @@ public class Application {
         }
 
         System.out.println("시도할 횟수는 몇 회인가요?");
-        String userInputCount = Console.readLine();
-        int count = 0;
-        try{
-            count = Integer.parseInt(userInputCount);
-        } catch (Exception e){
-            throw new IllegalArgumentException();
-        }
+        int count = parseCount(Console.readLine());
 
         System.out.println("실행 결과");
         for (int i=0; i<count; i++){
@@ -63,5 +47,36 @@ public class Application {
         }
 
         System.out.println("최종 우승자 : "+String.join(", ", winners));
+    }
+
+    private static List<String> parseNames(String raw) {
+        if (raw == null) throw new IllegalArgumentException("자동차 이름 공백");
+        List<String> names = Arrays.stream(raw.split(","))
+                .map(String::trim)
+                .peek(name -> {
+                    if (name.isEmpty()) {
+                        throw new IllegalArgumentException("자동차 이름 공백 불가");
+                    }
+                })
+                .collect(Collectors.toList());
+        if (names.isEmpty()) throw new IllegalArgumentException();
+
+        Set<String> dupCheck = new HashSet<>();
+        for (String name : names) {
+            if (!dupCheck.add(name)) {
+                throw new IllegalArgumentException("자동차 이름 중복");
+            }
+        }
+        return names;
+    }
+
+    private static int parseCount(String s) {
+        try {
+            int count = Integer.parseInt(s.trim());
+            if (count <= 0) throw new IllegalArgumentException("시도 횟수 음수");
+            return count;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("시도 횟수는 1 이상의 정수여야 함");
+        }
     }
 }
