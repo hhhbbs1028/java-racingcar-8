@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Application {
     private static void checkCarName(String carName) throws Exception{
-        if(carName.length()>5){
+        if(carName.length()>5 || carName.trim().isEmpty()){
             throw new IllegalArgumentException();
         }
     }
